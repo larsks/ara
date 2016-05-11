@@ -12,7 +12,7 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
-from flask import render_template
+from flask import render_template, request
 from ara import app, models, utils
 
 
@@ -39,19 +39,19 @@ def host(host, status=None):
 
 
 @app.route('/task/<task>')
-@app.route('/task/<task>/<status>')
-def task(task, status=None):
-    default_data = utils.default_data()
+def task(task):
+    task = models.Task.query.get(task)
+    return render_template('task.html', task=task)
 
-    task_name = models.Tasks.query.filter_by(id=task).first().task
-    if status is not None:
-        status_query = utils.status_to_query(status)
-        data = models.Tasks.query.filter_by(task=task_name, **status_query)
-    else:
-        data = models.Tasks.query.filter_by(task=task_name)
 
-    return render_template('task.html', task_name=task_name, task=task,
-                           data=data, **default_data)
+@app.route('/taskresult/<taskresult>')
+def taskresult(taskresult):
+    pass
+
+
+@app.route('/play/<play>')
+def play(play):
+    pass
 
 
 @app.route('/playbook/<playbook>')
