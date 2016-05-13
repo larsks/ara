@@ -177,14 +177,9 @@ def get_summary_stats(items, attr):
 
     data = {}
     for item in items:
-        stats = models.Stats.query.filter_by(**{attr: item.id})
-        data[item.id] = {
-            'ok': sum([int(stat.ok) for stat in stats]),
-            'changed': sum([int(stat.changed) for stat in stats]),
-            'failed': sum([int(stat.failed) for stat in stats]),
-            'skipped': sum([int(stat.skipped) for stat in stats]),
-            'unreachable': sum([int(stat.unreachable) for stat in stats])
-        }
+        stats = models.Stats.query.filter_by(**{attr: item.id}).all()
+        data[item.id] = models.StatsTuple(
+            *[sum(x) for x in zip(*stats)])
     return data
 
 

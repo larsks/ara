@@ -14,6 +14,8 @@
 
 import uuid
 from datetime import datetime
+from collections import namedtuple
+
 # This makes all the exceptions available as "models.<exception_name>".
 from sqlalchemy.orm.exc import *  # NOQA
 
@@ -74,7 +76,7 @@ class Playbook(db.Model, TimedEntity):
     time_end = db.Column(db.DateTime)
 
     def __repr__(self):
-        return '<Playbook %r>' % self.path
+        return '<Playbook %s>' % self.path
 
 
 class Play(db.Model, TimedEntity):
@@ -97,6 +99,9 @@ class Play(db.Model, TimedEntity):
 
     time_start = db.Column(db.DateTime, default=datetime.now)
     time_end = db.Column(db.DateTime)
+
+    def __repr__(self):
+        return '<Play %s>' % (self.name or self.id)
 
 
 class Task(db.Model, TimedEntity):
@@ -133,7 +138,8 @@ class Task(db.Model, TimedEntity):
                                    lazy='dynamic')
 
     def __repr__(self):
-        return '<Task %r>' % self.name
+        return '<Task %s>' % (self.name or self.id)
+
 
 
 class TaskResult(db.Model, TimedEntity):
@@ -166,7 +172,7 @@ class TaskResult(db.Model, TimedEntity):
     time_end = db.Column(db.DateTime)
 
     def __repr__(self):
-        return '<TaskResult %r>' % self.host
+        return '<TaskResult %s>' % self.host.name
 
 host_playbook = db.Table(
     'host_playbook',
@@ -201,6 +207,14 @@ class Host(db.Model):
     playbooks = db.relationship('Playbook', secondary=host_playbook,
                                 backref='hosts', lazy='dynamic')
 
+    def __repr__(self):
+        return '<Host %s>' % self.name
+
+
+StatsTuple = namedtuple('StatsTuple',
+                        ('changed', 'failed', 'ok', 'skipped', 'unreachable'))
+StatsTuple.__new__.__defaults__ = (0,) * len(StatsTuple._fields)
+
 
 class Stats(db.Model):
     '''A `Stats` object contains statistics for a single host from a
@@ -227,5 +241,8 @@ class Stats(db.Model):
     skipped = db.Column(db.Integer)
     unreachable = db.Column(db.Integer)
 
+    def __iter__(self):
+        return (getattr(self, attr) for attr in StatsTuple._fields)
+
     def __repr__(self):
-        return '<Stats %r>' % self.host
+        return '<Stats for %s>' % self.host.name
