@@ -23,31 +23,21 @@ def show_host(host):
     except models.NoResultFound:
         abort(404)
 
-    try:
-        facts = host.facts.one()
-    except models.NoResultFound:
-        facts = None
-
     stats = utils.get_host_playbook_stats(host)
 
-    return render_template('host.html', host=host, stats=stats, facts=facts)
+    return render_template('host.html', host=host, stats=stats)
 
 
-@host.route('/<host>/facts')
+@host.route('/<host>/facts/')
 def show_facts(host):
     try:
         host = models.Host.query.filter_by(name=host).one()
     except models.NoResultFound:
         abort(404)
 
-    try:
-        facts = host.facts.one()
-    except Exception:
-        facts = None
+    if not host.facts:
         abort(404)
+    else:
+        facts = json.loads(host.facts.values).iteritems()
 
-    timestamp = facts.timestamp
-    facts = json.loads(facts.values)
-
-    return render_template('host_facts.html', host=host, facts=facts,
-                           timestamp=timestamp)
+    return render_template('host_facts.html', host=host, facts=facts)

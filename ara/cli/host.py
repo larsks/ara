@@ -92,5 +92,5 @@ class HostFacts(ShowOne):
                 .filter((models.Host.id == parsed_args.host) |
                         (models.Host.name == parsed_args.host)).one())
 
-        facts = json.loads(host.facts.one().values)
+        facts = json.loads(host.facts.values)
         return zip(*sorted(six.iteritems(facts)))

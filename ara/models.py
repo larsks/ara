@@ -40,6 +40,11 @@ std_pkey = functools.partial(
     db.Column, pkey_type, primary_key=True,
     nullable=False, default=mkuuid)
 
+# Common options for one-to-one relationships in our database.
+one_to_one = functools.partial(
+    db.relationship, passive_deletes=False,
+    cascade='all, delete-orphan', uselist=False)
+
 # Common options for one-to-many relationships in our database.
 one_to_many = functools.partial(
     db.relationship, passive_deletes=False,
@@ -251,7 +256,7 @@ class Host(db.Model):
     id = std_pkey()
     name = db.Column(db.String(255), unique=True, index=True)
 
-    facts = one_to_many('HostFacts', backref='host')
+    facts = one_to_one('HostFacts', backref='host')
     task_results = one_to_many('TaskResult', backref='host')
     stats = one_to_many('Stats', backref='host')
     playbooks = many_to_many('Playbook', backref='hosts',

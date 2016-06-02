@@ -6,7 +6,7 @@
   <li class="active"><strong>Facts</strong></li>
 </ol>
 
-<h2>Last updated at {{ timestamp |datefmt }}</h2>
+<h2>Last updated at {{ host.facts.timestamp |datefmt }}</h2>
 <table class="facts table table-striped table-bordered table-hover table-condensed">
   <thead>
     <tr>
@@ -15,7 +15,7 @@
     </tr>
   </thead>
   <tbody>
-      {% for fact, value in facts.iteritems() %}
+      {% for fact, value in facts %}
       <tr>
         <td id="{{ fact }}"><a href="#{{ fact }}">{{ fact }}</a></td>
         <td><pre>{{ value | to_nice_json }}</pre></td>

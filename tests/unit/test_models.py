@@ -93,7 +93,7 @@ class TestModels(TestCase):
     def test_host_facts(self):
         host = m.Host.query.filter_by(name='localhost').one()
         facts = m.HostFacts.query.filter_by(host_id=host.id).one()
-        facts_from_host = host.facts.one()
+        facts_from_host = host.facts
 
         self.assertEqual(facts.values, facts_from_host.values)
 
