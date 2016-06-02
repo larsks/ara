@@ -98,12 +98,15 @@ class ResultShow(ShowOne):
         )
         return parser
 
-    def take_action(self, parsed_args):
+    def take_action(self, args):
         _fields = list(FIELDS)
-        if parsed_args.long:
+        if args.long:
             _fields.append(('Result',))
 
-        result = models.TaskResult.query.get(parsed_args.result_id)
+        result = models.TaskResult.query.get(args.result_id)
+        if result is None:
+            raise RuntimeError('Result %s does not exist' % (
+                args.result_id))
         return utils.fields_from_object(
             _fields, result,
             xforms={

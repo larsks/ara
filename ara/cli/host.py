@@ -67,9 +67,13 @@ class HostShow(ShowOne):
         return parser
 
     def take_action(self, args):
-        host = (models.Host.query
-                .filter((models.Host.id == args.host) |
-                        (models.Host.name == args.host)).one())
+        try:
+            host = (models.Host.query
+                    .filter((models.Host.id == args.host) |
+                            (models.Host.name == args.host)).one())
+        except models.NoResultFound:
+            raise RuntimeError('Host %s does not exist' % (
+                args.host))
 
         return utils.fields_from_object(FIELDS, host)
 
@@ -99,7 +103,7 @@ class HostFacts(ShowOne):
                     .filter((models.Host.id == args.host) |
                             (models.Host.name == args.host)).one())
         except models.NoResultFound:
-            raise RuntimeError('Host %s could not be found' % args.host)
+            raise RuntimeError('Host %s does not exist' % args.host)
 
         if not host.facts:
             raise RuntimeError('No facts available for host %s' % args.host)

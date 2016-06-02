@@ -73,6 +73,9 @@ class PlaybookShow(ShowOne):
 
     def take_action(self, args):
         playbook = models.Playbook.query.get(args.playbook_id)
+        if playbook is None:
+            raise RuntimeError('Playbook %s does not exist' % (
+                args.playbook_id))
         return utils.fields_from_object(FIELDS, playbook)
 
 
@@ -116,13 +119,13 @@ class PlaybookDelete(Command):
                 try:
                     res = models.Playbook.query.get(pid)
                     if res is None:
-                        raise ValueError('playbook does not exist')
+                        raise ValueError('Playbook does not exist')
                 except Exception as err:
                     if args.ignore_errors:
-                        self.log.warning('unable to delete playbook %s '
+                        self.log.warning('Unable to delete playbook %s '
                                          '(skipping): %s', pid, err)
                     else:
-                        raise RuntimeError('unable to delete playbook '
+                        raise RuntimeError('Unable to delete playbook '
                                            'id %s: %s' % (pid, err))
                 else:
                     pids.append(pid)

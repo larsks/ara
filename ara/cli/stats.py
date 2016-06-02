@@ -39,7 +39,7 @@ class StatsList(Lister):
         parser = super(StatsList, self).get_parser(prog_name)
         return parser
 
-    def take_action(self, parsed_args):
+    def take_action(self, args):
         stats = (models.Stats.query
                  .join(models.Playbook)
                  .join(models.Host)
@@ -66,8 +66,12 @@ class StatsShow(ShowOne):
         )
         return parser
 
-    def take_action(self, parsed_args):
-        stats = models.Stats.query.get(parsed_args.stats_id)
+    def take_action(self, args):
+        stats = models.Stats.query.get(args.stats_id)
+        if stats is None:
+            raise RuntimeError('Stats %s does not exist' % (
+                args.stats_id))
+
         return utils.fields_from_object(
             FIELDS, stats,
             xforms={
