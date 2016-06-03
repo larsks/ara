@@ -19,11 +19,13 @@ import six
 
 from cliff.lister import Lister
 from cliff.show import ShowOne
-from ara import models, utils
+from ara import models
+from ara.fields import Field
 
 FIELDS = (
-    ('ID',),
-    ('Name',),
+    Field('ID'),
+    Field('Name'),
+    Field('Latest facts', 'facts.timestamp')
 )
 
 
@@ -50,7 +52,9 @@ class HostList(Lister):
                      .join(models.Playbook)
                      .filter(models.Playbook.id == args.playbook))
 
-        return utils.fields_from_iter(FIELDS, hosts)
+        return [[field.name for field in FIELDS],
+                [[field(host) for field in FIELDS]
+                 for host in hosts]]
 
 
 class HostShow(ShowOne):
@@ -74,7 +78,8 @@ class HostShow(ShowOne):
         except models.NoResultFound:
             raise RuntimeError('Host %s could not be found' % args.host)
 
-        return utils.fields_from_object(FIELDS, host)
+        return [[field.name for field in FIELDS],
+                [field(host) for field in FIELDS]]
 
 
 class HostFacts(ShowOne):

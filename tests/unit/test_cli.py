@@ -328,7 +328,7 @@ class TestCLI(TestCase):
         self.assertEqual(res[1][0][0], ctx['result'].id)
 
     def test_result_list_non_existing_task(self):
-        ctx = ansible_run()
+        ansible_run()
 
         cmd = ara.cli.result.ResultList(None, None)
         parser = cmd.get_parser('test')
@@ -348,7 +348,7 @@ class TestCLI(TestCase):
         self.assertEqual(res[1][0], ctx['result'].id)
 
     def test_result_show_non_existing(self):
-        ctx = ansible_run()
+        ansible_run()
 
         cmd = ara.cli.result.ResultShow(None, None)
         parser = cmd.get_parser('test')
@@ -366,10 +366,10 @@ class TestCLI(TestCase):
         res = cmd.take_action(args)
 
         self.assertEqual(res[1][0], ctx['result'].id)
-        self.assertEqual(res[1][7], ctx['result'].result)
+        self.assertEqual(res[1][-1], json.dumps(ctx['result'].result))
 
     def test_result_show_long_non_existing(self):
-        ctx = ansible_run()
+        ansible_run()
 
         cmd = ara.cli.result.ResultShow(None, None)
         parser = cmd.get_parser('test')
