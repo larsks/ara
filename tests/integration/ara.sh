@@ -20,10 +20,11 @@ rm -rf $BUILD_DIR
 ansible-playbook -vv ${SCRIPT_CWD}/playbook.yml
 
 # Run test commands
-ara host show $(ara host list -c ID -f value |head -n1)
-ara host facts $(ara host list -c ID -f value |head -n1)
-ara play show $(ara play list -a -c ID -f value |head -n1)
 ara playbook show $(ara playbook list -c ID -f value |head -n1)
+ara host list -b $(ara playbook list -c ID -f value |head -n1)
+ara host show -b $(ara playbook list -c ID -f value |head -n1) localhost
+ara host facts -b $(ara playbook list -c ID -f value |head -n1) localhost
+ara play show $(ara play list -a -c ID -f value |head -n1)
 ara result show $(ara result list -a -c ID -f value |tail -n1) --long
 ara stats show $(ara stats list -c ID -f value |head -n1)
 ara task show $(ara task list -a -c ID -f value |head -n1)
